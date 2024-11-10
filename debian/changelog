@@ -1,6 +1,5 @@
-gxde-autotrash (1.0.0) UNRELEASED; urgency=low
+gxde-autotrash (1.1.0) UNRELEASED; urgency=low
 
-  * Initial release. Closes: #nnnn
-    <nnnn is the bug number of your ITP>
+  * feat: Now only notify when maunally clean
 
  -- shenmo <shenmo@spark-app.store>  Sun, 10 Nov 2024 16:00:21 +0800

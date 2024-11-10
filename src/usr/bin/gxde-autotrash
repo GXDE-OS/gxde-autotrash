@@ -44,7 +44,6 @@ set_cleanup_days() {
 # 执行清理操作
 cleanup_trash() {
     autotrash -d "$CLEANUP_DAYS"
-    notify-send "Autotrash" "${TRANSHELL_CONTENT_CLEANUP_COMPLETE}"
 }
 
 # 配置 systemd 定时器和服务文件
@@ -101,6 +100,7 @@ main_menu() {
                 ;;
             "${TRANSHELL_CONTENT_CLEANUP_NOW}")
                 cleanup_trash
+                notify-send "Autotrash" "${TRANSHELL_CONTENT_CLEANUP_COMPLETE}"
                 ;;
             "${TRANSHELL_CONTENT_EXIT}")
                 exit 0
