@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Auto Trash Cleanner
+Name[zh_CN]=自动清理回收站
+Type=Application
+Exec=gxde-autotrash
+Icon=user-trash
+X-GXDE-SysAssistant-Categories=system-tools

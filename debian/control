@@ -1,0 +1,17 @@
+Source: gxde-autotrash
+Section: utils
+Priority: optional
+Maintainer: shenmo <shenmo@spark-app.store>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.5.1
+Homepage: https://gitee.com/GXDE-OS/gxde-autotrash
+Rules-Requires-Root: no
+#Vcs-Git: https://salsa.debian.org/debian/gxde-autotrash.git
+#Vcs-Browser: https://salsa.debian.org/debian/gxde-autotrash
+
+Package: gxde-autotrash
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends},bash,libnotify-bin,zenity,garma,gxde-system-assistant,transhell,autotrash | autotrash-bash
+Description: This is a shell tool to configure auto trash cleaner
+ This is a shell tool to configure auto trash cleaner

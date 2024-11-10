@@ -1,0 +1,124 @@
+#!/bin/bash
+source /opt/bashimport/transhell.sh
+load_transhell_debug
+
+# 配置文件路径
+mkdir -p $HOME/.config/GXDE/gxde-autotrash/
+CONFIG_FILE="$HOME/.config/GXDE/gxde-autotrash/autotrash_manager.conf"
+
+# 默认清理天数
+DEFAULT_DAYS=30
+
+# 加载配置
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+else
+    CLEANUP_DAYS=$DEFAULT_DAYS
+fi
+
+# 启用或禁用服务
+toggle_service() {
+    if systemctl --user is-active autotrash.timer &>/dev/null; then
+        systemctl --user stop autotrash.timer
+        systemctl --user disable autotrash.timer
+        garma --info --text="${TRANSHELL_CONTENT_DISABLED_SERVICE}"
+    else
+        systemctl --user enable autotrash.timer
+        systemctl --user start autotrash.timer
+        garma --info --text="${TRANSHELL_CONTENT_ENABLED_SERVICE}"
+    fi
+}
+
+# 设置清理天数
+set_cleanup_days() {
+    local days
+    days=$(garma --entry --title="${TRANSHELL_CONTENT_SET_DAYS_TITLE}" --text="${TRANSHELL_CONTENT_SET_DAYS_PROMPT}" --entry-text="$CLEANUP_DAYS")
+    if [[ "$days" =~ ^[0-9]+$ ]]; then
+        CLEANUP_DAYS=$days
+        echo "CLEANUP_DAYS=$CLEANUP_DAYS" >"$CONFIG_FILE"
+    else
+        garma --error --text="${TRANSHELL_CONTENT_INVALID_DAYS}"
+    fi
+}
+
+# 执行清理操作
+cleanup_trash() {
+    autotrash -d "$CLEANUP_DAYS"
+    notify-send "Autotrash" "${TRANSHELL_CONTENT_CLEANUP_COMPLETE}"
+}
+
+# 配置 systemd 定时器和服务文件
+setup_systemd_service() {
+    mkdir -p "$HOME/.config/systemd/user"
+    cat <<EOF >"$HOME/.config/systemd/user/autotrash.service"
+[Unit]
+Description=Autotrash Cleanup Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/gxde-autotrash --cleanup
+EOF
+
+    cat <<EOF >"$HOME/.config/systemd/user/autotrash.timer"
+[Unit]
+Description=Autotrash Cleanup Timer
+
+[Timer]
+OnCalendar=*-*-* 00:00:00
+OnCalendar=*-*-* 12:00:00
+OnBootSec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+    systemctl --user daemon-reload
+}
+
+# 检查服务状态
+get_service_status() {
+    if systemctl --user is-active autotrash.timer &>/dev/null; then
+        echo "${TRANSHELL_CONTENT_DISABLE_SERVICE}"
+    else
+        echo "${TRANSHELL_CONTENT_ENABLE_SERVICE}"
+    fi
+}
+
+# 主菜单
+main_menu() {
+    while true; do
+        service_status=$(get_service_status)
+        choice=$(zenity --list --width 450 --height 300 --title="${TRANSHELL_CONTENT_MAIN_TITLE}" \
+            --column="${TRANSHELL_CONTENT_OPERATION}" "${service_status}" "${TRANSHELL_CONTENT_SET_DAYS} (${CLEANUP_DAYS} ${TRANSHELL_CONTENT_DAYS})" "${TRANSHELL_CONTENT_CLEANUP_NOW}" "${TRANSHELL_CONTENT_EXIT}")
+
+        case "$choice" in
+            "${TRANSHELL_CONTENT_ENABLE_SERVICE}"|"${TRANSHELL_CONTENT_DISABLE_SERVICE}")
+                toggle_service
+                ;;
+            "${TRANSHELL_CONTENT_SET_DAYS} (${CLEANUP_DAYS} ${TRANSHELL_CONTENT_DAYS})")
+                set_cleanup_days
+                ;;
+            "${TRANSHELL_CONTENT_CLEANUP_NOW}")
+                cleanup_trash
+                ;;
+            "${TRANSHELL_CONTENT_EXIT}")
+                exit 0
+                ;;
+            *)
+                exit 0
+                ;;
+        esac
+    done
+}
+
+# 处理参数
+case "$1" in
+    --cleanup)
+        cleanup_trash
+        ;;
+    *)
+        setup_systemd_service
+        main_menu
+        ;;
+esac
