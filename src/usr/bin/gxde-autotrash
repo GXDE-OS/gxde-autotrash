@@ -88,7 +88,7 @@ get_service_status() {
 main_menu() {
     while true; do
         service_status=$(get_service_status)
-        choice=$(zenity --list --width 450 --height 300 --title="${TRANSHELL_CONTENT_MAIN_TITLE}" \
+        choice=$(zenity --list --text="${TRANSHELL_CONTENT_EXPLAIN_FUNCION}" --width 450 --height 300 --title="${TRANSHELL_CONTENT_MAIN_TITLE}" \
             --column="${TRANSHELL_CONTENT_OPERATION}" "${service_status}" "${TRANSHELL_CONTENT_SET_DAYS} (${CLEANUP_DAYS} ${TRANSHELL_CONTENT_DAYS})" "${TRANSHELL_CONTENT_CLEANUP_NOW}" "${TRANSHELL_CONTENT_EXIT}")
 
         case "$choice" in

@@ -1,4 +1,4 @@
-gxde-autotrash (1.1.0) UNRELEASED; urgency=low
+gxde-autotrash (1.1.1) UNRELEASED; urgency=low
 
   * feat: Now only notify when maunally clean
 

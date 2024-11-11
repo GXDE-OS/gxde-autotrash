@@ -1,4 +1,5 @@
 #!/bin/bash
+TRANSHELL_CONTENT_EXPLAIN_FUNCION="本工具能够自动清理回收站中超过设定天数的文件，让您无需手动清理回收站。\n启用后，您可以放心地将文件移入回收站，无需担心长时间未清理导致的存储压力"
 TRANSHELL_CONTENT_DISABLED_SERVICE="已禁用每日自动清理回收站服务"
 TRANSHELL_CONTENT_ENABLED_SERVICE="已启用每日自动清理回收站服务"
 TRANSHELL_CONTENT_DISABLE_SERVICE="禁用每日自动清理回收站服务"
