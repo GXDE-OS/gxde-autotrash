@@ -1,5 +1,6 @@
-gxde-autotrash (1.1.1-1) UNRELEASED; urgency=low
+gxde-autotrash (1.2.0) UNRELEASED; urgency=low
 
   * feat: Now only notify when maunally clean
+  * Use gxde-k9 instead of systemd
 
  -- shenmo <shenmo@spark-app.store>  Sun, 10 Nov 2024 16:00:21 +0800

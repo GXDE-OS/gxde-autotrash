@@ -12,6 +12,6 @@ Rules-Requires-Root: no
 Package: gxde-autotrash
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends},bash,libnotify-bin,zenity,garma,gxde-system-assistant,transhell,autotrash | autotrash-bash
+Depends: ${misc:Depends},bash,libnotify-bin,zenity,garma,gxde-system-assistant,transhell,autotrash | autotrash-bash,gxde-k9(>=1.4.0)
 Description: This is a shell tool to configure auto trash cleaner
  This is a shell tool to configure auto trash cleaner

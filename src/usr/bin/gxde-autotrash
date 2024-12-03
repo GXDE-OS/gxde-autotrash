@@ -18,13 +18,13 @@ fi
 
 # 启用或禁用服务
 toggle_service() {
-    if systemctl --user is-active autotrash.timer &>/dev/null; then
+    if [[ -e "$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer" ]]; then
         systemctl --user stop autotrash.timer
         systemctl --user disable autotrash.timer
+        rm -vf "$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer"
         garma --info --text="${TRANSHELL_CONTENT_DISABLED_SERVICE}"
     else
-        systemctl --user enable autotrash.timer
-        systemctl --user start autotrash.timer
+        create_k9_timer
         garma --info --text="${TRANSHELL_CONTENT_ENABLED_SERVICE}"
     fi
 }
@@ -46,38 +46,19 @@ cleanup_trash() {
     autotrash -d "$CLEANUP_DAYS"
 }
 
-# 配置 systemd 定时器和服务文件
-setup_systemd_service() {
-    mkdir -p "$HOME/.config/systemd/user"
-    cat <<EOF >"$HOME/.config/systemd/user/autotrash.service"
-[Unit]
-Description=Autotrash Cleanup Service
 
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/gxde-autotrash --cleanup
+create_k9_timer() {
+    mkdir -p "$HOME/.local/share/GXDE/gxde-k9/timer/"
+    cat <<EOF >"$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer"
+* */6 * * * | /usr/bin/gxde-autotrash --cleanup
+
 EOF
 
-    cat <<EOF >"$HOME/.config/systemd/user/autotrash.timer"
-[Unit]
-Description=Autotrash Cleanup Timer
-
-[Timer]
-OnCalendar=*-*-* 00:00:00
-OnCalendar=*-*-* 12:00:00
-OnBootSec=5min
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-EOF
-
-    systemctl --user daemon-reload
 }
 
 # 检查服务状态
 get_service_status() {
-    if systemctl --user is-active autotrash.timer &>/dev/null; then
+    if [[ -e "$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer" ]]; then
         echo "${TRANSHELL_CONTENT_DISABLE_SERVICE}"
     else
         echo "${TRANSHELL_CONTENT_ENABLE_SERVICE}"
@@ -118,7 +99,6 @@ case "$1" in
         cleanup_trash
         ;;
     *)
-        setup_systemd_service
         main_menu
         ;;
 esac
