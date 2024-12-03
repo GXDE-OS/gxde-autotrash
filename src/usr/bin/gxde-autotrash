@@ -15,16 +15,40 @@ if [ -f "$CONFIG_FILE" ]; then
 else
     CLEANUP_DAYS=$DEFAULT_DAYS
 fi
+create_k9_timer() {
+    mkdir -p "$HOME/.local/share/GXDE/gxde-k9/timer/"
+    cat <<EOF >"$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer"
+* */6 * * * | /usr/bin/gxde-autotrash --cleanup
 
+EOF
+
+}
+create_autostart(){
+    mkdir -p "$HOME/.config/autostart"
+    cat <<EOF >"$HOME/.config/autostart/autotrash.desktop"
+[Desktop Entry]
+Version=1.0
+Name=trash-autoclean
+Name[zh_CN]=自动清理回收站
+Comment=
+Type=Application
+Exec=bash -c "/usr/bin/gxde-autotrash --cleanup"
+Icon=user-trash-full
+Categories=Utility
+
+EOF
+}
 # 启用或禁用服务
 toggle_service() {
     if [[ -e "$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer" ]]; then
         systemctl --user stop autotrash.timer
         systemctl --user disable autotrash.timer
         rm -vf "$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer"
+        rm -vf "$HOME/.config/autostart/autotrash.desktop"
         garma --info --text="${TRANSHELL_CONTENT_DISABLED_SERVICE}"
     else
         create_k9_timer
+        create_autostart
         garma --info --text="${TRANSHELL_CONTENT_ENABLED_SERVICE}"
     fi
 }
@@ -47,14 +71,7 @@ cleanup_trash() {
 }
 
 
-create_k9_timer() {
-    mkdir -p "$HOME/.local/share/GXDE/gxde-k9/timer/"
-    cat <<EOF >"$HOME/.local/share/GXDE/gxde-k9/timer/autotrash.timer"
-* */6 * * * | /usr/bin/gxde-autotrash --cleanup
 
-EOF
-
-}
 
 # 检查服务状态
 get_service_status() {
